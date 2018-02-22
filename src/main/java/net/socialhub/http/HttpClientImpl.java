@@ -17,13 +17,10 @@
 package net.socialhub.http;
 
 
+import net.socialhub.http.HttpClientConfiguration.HttpClientDefaultConfiguration;
 import net.socialhub.logger.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -46,9 +43,7 @@ import static net.socialhub.logger.Logger.LogLevel.DEBUG;
  * <li>Changed for Facebook</li>
  * </ul>
  */
-public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpResponseCode, java.io.Serializable {
-
-    private static final long serialVersionUID = -1349112176863288573L;
+public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpResponseCode, Serializable {
 
     private static final Logger logger = Logger.getLogger(HttpClientImpl.class);
 
@@ -69,7 +64,11 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
         super(conf);
     }
 
-    private static final Map<HttpClientConfiguration, HttpClient> instanceMap = new HashMap<HttpClientConfiguration, HttpClient>(1);
+    public HttpClientImpl() {
+        super(new HttpClientDefaultConfiguration());
+    }
+
+    private static final Map<HttpClientConfiguration, HttpClient> instanceMap = new HashMap<>(1);
 
     public static HttpClient getInstance(HttpClientConfiguration conf) {
         HttpClient client = instanceMap.get(conf);
@@ -104,7 +103,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                     con.setRequestMethod(req.getMethod().name());
                     if (req.getMethod() == RequestMethod.POST) {
                         if (HttpParameter.containsFile(req.getParameters())) {
-                            String boundary = "----Facebook4J-upload" + System.currentTimeMillis();
+                            String boundary = "----JHttpClient-upload" + System.currentTimeMillis();
                             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                             boundary = "--" + boundary;
                             con.setDoOutput(true);
