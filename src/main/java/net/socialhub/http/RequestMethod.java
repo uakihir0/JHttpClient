@@ -33,6 +33,7 @@ public final class RequestMethod implements java.io.Serializable {
     public static final RequestMethod DELETE = new RequestMethod("DELETE");
     public static final RequestMethod HEAD = new RequestMethod("HEAD");
     public static final RequestMethod PUT = new RequestMethod("PUT");
+    public static final RequestMethod PATCH = new RequestMethod("PATCH");
 
     private static final long serialVersionUID = -4399222582680270381L;
 

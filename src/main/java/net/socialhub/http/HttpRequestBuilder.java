@@ -63,12 +63,33 @@ public class HttpRequestBuilder {
         return this;
     }
 
+    public HttpRequestBuilder pathValue(String key, String value) {
+        path = path.replaceAll("\\{" + key + "\\}", value);
+        return this;
+    }
+
     public HttpResponse get() throws HttpException {
         return proceed(RequestMethod.GET);
     }
 
     public HttpResponse post() throws HttpException {
         return proceed(RequestMethod.POST);
+    }
+
+    public HttpResponse delete() throws HttpException {
+        return proceed(RequestMethod.DELETE);
+    }
+
+    public HttpResponse head() throws HttpException {
+        return proceed(RequestMethod.HEAD);
+    }
+
+    public HttpResponse put() throws HttpException {
+        return proceed(RequestMethod.PUT);
+    }
+
+    public HttpResponse patch() throws HttpException {
+        return proceed(RequestMethod.PATCH);
     }
 
     private HttpResponse proceed(RequestMethod method) throws HttpException {
