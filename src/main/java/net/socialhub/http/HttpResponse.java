@@ -53,11 +53,9 @@ public abstract class HttpResponse {
      * Returns the response stream.<br>
      * This method cannot be called after calling asString() or asDcoument()<br>
      * It is suggested to call disconnect() after consuming the stream.
-     * <p/>
      * Disconnects the internal HttpURLConnection silently.
      *
      * @return response body stream
-     * @throws HttpException
      * @see #disconnect()
      */
     public InputStream asStream() {
@@ -68,11 +66,8 @@ public abstract class HttpResponse {
     }
 
     /**
-     * Returns the response body as string.<br>
+     * Returns the response body as string.
      * Disconnects the internal HttpURLConnection silently.
-     *
-     * @return response body
-     * @throws HttpException
      */
     public String asString() throws HttpException {
         if (null == responseAsString) {

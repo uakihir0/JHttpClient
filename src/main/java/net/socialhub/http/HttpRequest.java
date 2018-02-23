@@ -46,7 +46,6 @@ public final class HttpRequest implements Serializable {
      * @param method         Specifies the HTTP method
      * @param url            the request to request
      * @param parameters     parameters
-     * @param requestHeaders
      */
     public HttpRequest(RequestMethod method, String url, HttpParameter[] parameters, Map<String, String> requestHeaders) {
 
