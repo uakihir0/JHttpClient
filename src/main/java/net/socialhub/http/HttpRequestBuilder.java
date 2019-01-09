@@ -16,6 +16,8 @@ public class HttpRequestBuilder {
 
     private String mediaType;
 
+    private String userAgent = "JHttpClient/1.0";
+
     private HttpClientConfiguration config;
 
     private List<HttpParameter> params = new ArrayList<>();
@@ -50,6 +52,11 @@ public class HttpRequestBuilder {
         } else {
             params.add(new HttpParameter(key, value.toString()));
         }
+        return this;
+    }
+
+    public HttpRequestBuilder userAgent(String userAgent) {
+        this.userAgent = userAgent;
         return this;
     }
 
@@ -99,6 +106,10 @@ public class HttpRequestBuilder {
 
         if (mediaType != null) {
             header.put("Accept", mediaType);
+        }
+
+        if (userAgent != null) {
+            header.put("User-Agent", userAgent);
         }
 
         HttpRequest request = new HttpRequest(method, getUrl(), //
