@@ -3,6 +3,7 @@ package net.socialhub.http;
 import net.socialhub.http.HttpClientConfiguration.HttpClientDefaultConfiguration;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,16 @@ public class HttpRequestBuilder {
         } else {
             params.add(new HttpParameter(key, value.toString()));
         }
+        return this;
+    }
+
+    public HttpRequestBuilder file(String key, File file) {
+        params.add(new HttpParameter(key, file));
+        return this;
+    }
+
+    public HttpRequestBuilder file(String key, InputStream fileBody, String fileName) {
+        params.add(new HttpParameter(key, fileName, fileBody));
         return this;
     }
 
