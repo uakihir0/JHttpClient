@@ -102,6 +102,7 @@ public final class HttpParameter implements Comparable, Serializable {
     private static final String JPEG = "image/jpeg";
     private static final String GIF = "image/gif";
     private static final String PNG = "image/png";
+    private static final String JSON = "application/json";
     private static final String OCTET = "application/octet-stream";
 
     /**
@@ -132,6 +133,8 @@ public final class HttpParameter implements Comparable, Serializable {
             } else if (extensions.length() == 4) {
                 if ("jpeg".equals(extensions)) {
                     contentType = JPEG;
+                } else if ("json".equals(extensions)) {
+                    contentType = JSON;
                 } else {
                     contentType = OCTET;
                 }
@@ -158,6 +161,18 @@ public final class HttpParameter implements Comparable, Serializable {
             return false;
 
         return true;
+    }
+
+    public static boolean isMultipartRequest(HttpParameter[] params) {
+        if (containsFile(params)) {
+            if (params.length == 1) {
+                if (params[0].getContentType().equals(JSON)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public static boolean containsFile(HttpParameter[] params) {

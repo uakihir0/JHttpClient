@@ -2,6 +2,7 @@ package net.socialhub.http;
 
 import net.socialhub.http.HttpClientConfiguration.HttpClientDefaultConfiguration;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -63,6 +64,12 @@ public class HttpRequestBuilder {
 
     public HttpRequestBuilder file(String key, InputStream fileBody, String fileName) {
         params.add(new HttpParameter(key, fileName, fileBody));
+        return this;
+    }
+
+    public HttpRequestBuilder json(String json){
+        InputStream stream = new ByteArrayInputStream(json.getBytes());
+        params.add(new HttpParameter("json", "param.json", stream));
         return this;
     }
 

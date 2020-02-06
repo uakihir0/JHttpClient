@@ -28,6 +28,7 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                     setHeaders(req, con);
                     con.setRequestMethod(req.getMethod().name());
                     if (req.getMethod() == RequestMethod.POST) {
-                        if (HttpParameter.containsFile(req.getParameters())) {
+                        if (HttpParameter.isMultipartRequest(req.getParameters())) {
                             String boundary = "----JHttpClient-upload" + System.currentTimeMillis();
                             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                             boundary = "--" + boundary;
@@ -110,6 +111,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                             os = con.getOutputStream();
                             DataOutputStream out = new DataOutputStream(os);
                             for (HttpParameter param : req.getParameters()) {
+
                                 if (param.isFile()) {
                                     write(out, boundary + "\r\n");
                                     write(out, "Content-Disposition: form-data; name=\"" + param.getName() + "\"; filename=\"" + param.getFile().getName() + "\"\r\n");
@@ -123,6 +125,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                                     }
                                     write(out, "\r\n");
                                     in.close();
+
                                 } else {
                                     write(out, boundary + "\r\n");
                                     write(out, "Content-Disposition: form-data; name=\"" + param.getName() + "\"\r\n");
@@ -136,16 +139,33 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                             write(out, "\r\n");
 
                         } else {
-                            con.setRequestProperty("Content-Type",
-                                    "application/x-www-form-urlencoded");
-                            String postParam = HttpParameter.encodeParameters(req.getParameters());
-                            logger.debug("Post Params: " +  postParam);
-                            byte[] bytes = postParam.getBytes("UTF-8");
-                            con.setRequestProperty("Content-Length",
-                                    Integer.toString(bytes.length));
-                            con.setDoOutput(true);
-                            os = con.getOutputStream();
-                            os.write(bytes);
+                            if (req.getParameters().length == 1) {
+                                HttpParameter param = req.getParameters()[0];
+                                con.setRequestProperty("Content-Type", param.getContentType());
+
+                                con.setDoOutput(true);
+                                os = con.getOutputStream();
+                                DataOutputStream out = new DataOutputStream(os);
+                                BufferedInputStream in = new BufferedInputStream(
+                                        param.hasFileBody() ? param.getFileBody() : new FileInputStream(param.getFile())
+                                );
+                                int buff;
+                                while ((buff = in.read()) != -1) {
+                                    out.write(buff);
+                                }
+
+                            } else {
+                                con.setRequestProperty("Content-Type",
+                                        "application/x-www-form-urlencoded");
+                                String postParam = HttpParameter.encodeParameters(req.getParameters());
+                                logger.debug("Post Params: " + postParam);
+                                byte[] bytes = postParam.getBytes("UTF-8");
+                                con.setRequestProperty("Content-Length",
+                                        Integer.toString(bytes.length));
+                                con.setDoOutput(true);
+                                os = con.getOutputStream();
+                                os.write(bytes);
+                            }
                         }
                         os.flush();
                         os.close();
