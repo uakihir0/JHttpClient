@@ -41,9 +41,12 @@ public interface HttpClientConfiguration {
 
     int getHttpDefaultMaxPerRoute();
 
+    String getFormTextContentType();
+
     boolean isPrettyDebugEnabled();
 
     boolean isGZIPEnabled();
+
 
     public static class HttpClientDefaultConfiguration implements HttpClientConfiguration {
 
@@ -95,6 +98,11 @@ public interface HttpClientConfiguration {
         @Override
         public int getHttpDefaultMaxPerRoute() {
             return 2;
+        }
+
+        @Override
+        public String getFormTextContentType() {
+            return "text/plain";
         }
 
         @Override

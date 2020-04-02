@@ -20,7 +20,12 @@ package net.socialhub.http;
 import net.socialhub.http.HttpClientConfiguration.HttpClientDefaultConfiguration;
 import net.socialhub.logger.Logger;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -28,7 +33,6 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +42,11 @@ import static net.socialhub.logger.Logger.LogLevel.DEBUG;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
- * @since Twitter4J 2.1.2
  * @author Ryuji Yamashita - roundrop at gmail.com
  * <ul>
  * <li>Changed for Facebook</li>
  * </ul>
+ * @since Twitter4J 2.1.2
  */
 public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpResponseCode, Serializable {
 
@@ -129,7 +133,13 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                                 } else {
                                     write(out, boundary + "\r\n");
                                     write(out, "Content-Disposition: form-data; name=\"" + param.getName() + "\"\r\n");
-                                    write(out, "Content-Type: text/plain; charset=UTF-8\r\n\r\n");
+
+                                    // フォーム中のコンテンツタイプの設定
+                                    if (CONF.getFormTextContentType() != null) {
+                                        write(out, "Content-Type: " + CONF.getFormTextContentType() + "; charset=UTF-8\r\n");
+                                    }
+
+                                    write(out, "\r\n");
                                     logger.debug(param.getValue());
                                     out.write(param.getValue().getBytes("UTF-8"));
                                     write(out, "\r\n");
@@ -242,7 +252,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
     private void setHeaders(HttpRequest req, HttpURLConnection connection) {
         if (logger.getLogLevel().isLogTarget(DEBUG)) {
             logger.debug("Request: ");
-            logger.debug(req.getMethod().name() + " " +  req.getURL());
+            logger.debug(req.getMethod().name() + " " + req.getURL());
         }
 
         if (req.getRequestHeaders() != null) {
