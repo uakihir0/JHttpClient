@@ -149,7 +149,9 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                             write(out, "\r\n");
 
                         } else {
-                            if (req.getParameters().length == 1) {
+                            if ((req.getParameters().length == 1) &&
+                                    req.getParameters()[0].isFile()) {
+
                                 HttpParameter param = req.getParameters()[0];
                                 con.setRequestProperty("Content-Type", param.getContentType());
 
