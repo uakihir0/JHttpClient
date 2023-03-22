@@ -43,6 +43,8 @@ public interface HttpClientConfiguration {
 
     String getFormTextContentType();
 
+    String[] getRawContentTypes();
+
     boolean isPrettyDebugEnabled();
 
     boolean isGZIPEnabled();
@@ -102,7 +104,14 @@ public interface HttpClientConfiguration {
 
         @Override
         public String getFormTextContentType() {
-            return "text/plain";
+            return HttpMediaType.TEXT_PLAIN;
+        }
+
+        @Override
+        public String[] getRawContentTypes() {
+            return new String[]{
+                    HttpMediaType.APPLICATION_JSON,
+            };
         }
 
         @Override

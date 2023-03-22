@@ -107,7 +107,7 @@ public class HttpClientImpl extends HttpClientBase implements HttpClient, HttpRe
                     setHeaders(req, con);
                     con.setRequestMethod(req.getMethod().name());
                     if (req.getMethod() == RequestMethod.POST) {
-                        if (HttpParameter.isMultipartRequest(req.getParameters())) {
+                        if (HttpParameter.isMultipartRequest(req.getParameters(), CONF.getRawContentTypes())) {
                             String boundary = "----JHttpClient-upload" + System.currentTimeMillis();
                             con.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                             boundary = "--" + boundary;

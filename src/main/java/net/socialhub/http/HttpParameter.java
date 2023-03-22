@@ -99,12 +99,6 @@ public final class HttpParameter implements Comparable, Serializable {
         return fileBody != null;
     }
 
-    private static final String JPEG = "image/jpeg";
-    private static final String GIF = "image/gif";
-    private static final String PNG = "image/png";
-    private static final String JSON = "application/json";
-    private static final String OCTET = "application/octet-stream";
-
     /**
      * @return content-type
      */
@@ -117,29 +111,29 @@ public final class HttpParameter implements Comparable, Serializable {
         int index = extensions.lastIndexOf(".");
         if (-1 == index) {
             // no extension
-            contentType = OCTET;
+            contentType = HttpMediaType.APPLICATION_OCTET_STREAM;
         } else {
             extensions = extensions.substring(extensions.lastIndexOf(".") + 1).toLowerCase();
             if (extensions.length() == 3) {
                 if ("gif".equals(extensions)) {
-                    contentType = GIF;
+                    contentType = HttpMediaType.IMAGE_GIF;
                 } else if ("png".equals(extensions)) {
-                    contentType = PNG;
+                    contentType = HttpMediaType.IMAGE_PNG;
                 } else if ("jpg".equals(extensions)) {
-                    contentType = JPEG;
+                    contentType = HttpMediaType.IMAGE_JPEG;
                 } else {
-                    contentType = OCTET;
+                    contentType = HttpMediaType.APPLICATION_OCTET_STREAM;
                 }
             } else if (extensions.length() == 4) {
                 if ("jpeg".equals(extensions)) {
-                    contentType = JPEG;
+                    contentType = HttpMediaType.IMAGE_JPEG;
                 } else if ("json".equals(extensions)) {
-                    contentType = JSON;
+                    contentType = HttpMediaType.APPLICATION_JSON;
                 } else {
-                    contentType = OCTET;
+                    contentType = HttpMediaType.APPLICATION_OCTET_STREAM;
                 }
             } else {
-                contentType = OCTET;
+                contentType = HttpMediaType.APPLICATION_OCTET_STREAM;
             }
         }
         return contentType;
@@ -163,11 +157,13 @@ public final class HttpParameter implements Comparable, Serializable {
         return true;
     }
 
-    public static boolean isMultipartRequest(HttpParameter[] params) {
+    public static boolean isMultipartRequest(HttpParameter[] params, String[] rawContentTypes) {
         if (containsFile(params)) {
             if (params.length == 1) {
-                if (params[0].getContentType().equals(JSON)) {
-                    return false;
+                for (String rawContentType : rawContentTypes) {
+                    if (params[0].getContentType().equals(rawContentType)) {
+                        return false;
+                    }
                 }
             }
             return true;
